@@ -75,15 +75,7 @@
                         <label for="inputUnitPrice" class="form-label">商品單價</label>
                         <input type="number" class="form-control" id="inputUnitPrice" name="price" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="inputProductCategory" class="form-label">商品種類</label>
-                        <select id="inputProductCategory" class="form-select" name="category" required>
-                            <option selected disabled value="">請選擇類型</option>
-                            <option value="BOOK">BOOK</option>
-                            <option value="CD">CD</option>
-                            <option value="DVD">DVD</option>
-                        </select>
-                    </div>
+
                     <div class="mb-3">
                         <label for="inputProductDesc" class="form-label">商品敘述</label>
                         <textarea class="form-control" id="inputProductDesc" name="description" required></textarea>
@@ -113,19 +105,17 @@
             <th width="10%"><center>商品編號</center></th>
             <th width="20%"><center>商品名稱</center></th>
             <th width="15%"><center>商品單價</center></th>
-            <th width="15%"><center>商品類別</center></th>
             <th colspan="2"><center>資料操作</center></th>
         </tr>
     </thead>
     <tbody id="product">
-    {% for i in book_data %}
+    {% for i in product_data %}
         <tr>
-            <td><center>{{ i.商品編號 }}</center></td>
-            <td><center>{{ i.商品名稱 }}</center></td>
-            <td><center>{{ i.商品售價 }}</center></td>
-            <td><center>{{ i.商品類別 }}</center></td>
-            <td><center><button type="submit" value="{{i.商品編號}}" name="edit" class="btn btn-success">編輯商品</button></center></td>
-            <td><center><button type="submit" value="{{i.商品編號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.商品名稱 }}\' 嗎？'))" class="btn btn-danger">刪除商品</button></center></td>
+            <td><center>{{ i.pNo }}</center></td>
+            <td><center>{{ i.pName }}</center></td>
+            <td><center>{{ i.price }}</center></td>
+            <td><center><button type="submit" value="{{i.pNo}}" name="edit" class="btn btn-success">編輯商品</button></center></td>
+            <td><center><button type="submit" value="{{i.pNo}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.pName }}\' 嗎？'))" class="btn btn-danger">刪除商品</button></center></td>
         </tr>
     {% endfor %}
     </tbody>

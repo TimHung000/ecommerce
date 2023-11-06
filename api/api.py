@@ -17,10 +17,9 @@ class User(UserMixin):
 def user_loader(userid):  
     user = User()
     user.id = userid
-    data = Member.get_role(userid)
+    data = Member.get_member_by_Id(userid)
     try:
-        user.role = data[0]
-        user.name = data[1]
+        user.name = data[0]
     except:
         pass
     return user
@@ -31,13 +30,11 @@ def login():
 
         account = request.form['account']
         password = request.form['password']
-        data = Member.get_member(account) 
+        member = Member.get_member_by_account(account) 
 
         try:
-            DB_password = data[0][1]
-            user_id = data[0][2]
-            identity = data[0][3]
-
+            user_id = member[0]
+            DB_password = member[3]
         except:
             flash('*沒有此帳號')
             return redirect(url_for('api.login'))
@@ -47,10 +44,9 @@ def login():
             user.id = user_id
             login_user(user)
 
-            if( identity == 'user'):
-                return redirect(url_for('bookstore.bookstore'))
-            else:
-                return redirect(url_for('manager.productManager'))
+            # return redirect(url_for('bookstore.bookstore'))
+            # return redirect(url_for('manager.productManager'))
+            return redirect(url_for('manager.home'))
         
         else:
             flash('*密碼錯誤，請再試一次')
@@ -63,9 +59,10 @@ def login():
 def register():
     if request.method == 'POST':
         user_account = request.form['account']
-        exist_account = Member.get_all_account()
+        all_member = Member.get_all_member()
         account_list = []
-        for i in exist_account:
+        for i in all_member:
+            print(i)
             account_list.append(i[0])
 
         if(user_account in account_list):
@@ -73,10 +70,9 @@ def register():
             return redirect(url_for('api.register'))
         else:
             input = { 
-                'name': request.form['username'], 
-                'account':user_account, 
-                'password':request.form['password'], 
-                'identity':request.form['identity'] 
+                'username': request.form['username'], 
+                'account' : user_account, 
+                'password': request.form['password'], 
             }
             Member.create_member(input)
             return redirect(url_for('api.login'))

@@ -11,17 +11,22 @@ from sqlalchemy import null
 from link import *
 import math
 from base64 import b64encode
-from api.sql import Member, Orders, Product, Record, Cart
+from api.sql import Member, Order_List, Product, Record, Cart
 
-store = Blueprint('bookstore', __name__, template_folder='../templates')
+supplier = Blueprint('supplier', __name__, template_folder='../templates')
 
-@store.route('/', methods=['GET', 'POST'])
+@supplier.route('/', methods=['GET', 'POST'])
 @login_required
-def bookstore():
+def product():
     result = Product.count()
     count = math.ceil(result[0]/9)
     flag = 0
     
+    if request.method == 'GET':
+        if(current_user.role == 'manager'):
+            flash('No permission')
+            return redirect(url_for('manager.home'))
+
     if 'keyword' in request.args and 'page' in request.args:
         total = 0
         single = 1
@@ -31,7 +36,7 @@ def bookstore():
         search = request.values.get('keyword')
         keyword = search
         
-        cursor.prepare('SELECT PNO, PNAME, PRICE, PDESC, LAUNCHBY FROM PRODUCT WHERE PNAME LIKE :search')
+        cursor.prepare('SELECT * FROM PRODUCT WHERE PNAME LIKE :search')
         cursor.execute(None, {'search': '%' + keyword + '%'})
         book_row = cursor.fetchall()
         book_data = []
@@ -207,7 +212,7 @@ def cart():
 
             time = str(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
             format = 'yyyy/mm/dd hh24:mi:ss'
-            Orders.add_order( {'mid': current_user.id, 'time':time, 'total':total, 'format':format, 'tno':tno} )
+            Order_List.add_order( {'mid': current_user.id, 'time':time, 'total':total, 'format':format, 'tno':tno} )
 
             return render_template('complete.html', user=current_user.name)
 
@@ -258,7 +263,7 @@ def orderlist():
         }
         orderlist.append(temp)
     
-    orderdetail_row = Orders.get_orderdetail()
+    orderdetail_row = Order_List.get_orderdetail()
     orderdetail = []
 
     for j in orderdetail_row:

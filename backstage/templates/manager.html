@@ -51,16 +51,15 @@
       </tr>
       {% for book in book_data %}
       <tr>
-        <td> {{ book.商品編號 }}</td>
-        <td> {{ book.商品名稱 }}</td>
-        <td> {{ book.商品售價 }}</td>
-        <td> {{ book.商品類別 }}</td>
+        <td> {{ book.pNo }}</td>
+        <td> {{ book.pName }}</td>
+        <td> {{ book.price }}</td>
         <td>
-          <button type="submit" value="{{book.商品編號}}" name="edit">修改
+          <button type="submit" value="{{book.pNo}}" name="edit">修改
           </button>
         </td>
         <td>
-          <button type="submit" value="{{book.商品編號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ book.商品名稱 }}\' 嗎？'))">
+          <button type="submit" value="{{book.pNo}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ book.pName }}\' 嗎？'))">
             刪除
           </button>
         </td>

@@ -23,66 +23,57 @@ def home():
 
 @manager.route('/productManager', methods=['GET', 'POST'])
 @login_required
-def productManager():
-    if request.method == 'GET':
-        if(current_user.role == 'user'):
-            flash('No permission')
-            return redirect(url_for('index'))
-        
+def productManager():        
     if 'delete' in request.values:
-        pid = request.values.get('delete')
-        data = Record.delete_check(pid)
-        
-        if(data != None):
+        pNo = request.values.get('delete')
+        product = Product.get_product_by_pNo(pNo)
+        print(type(current_user.id))
+        print(current_user.id)
+        print(type(product[4]))
+        print(product[4])
+        print(pNo == product[4])
+        if(product == None or str(product[4]) != current_user.id):
             flash('failed')
         else:
-            data = Product.get_product(pid)
-            Product.delete_product(pid)
+            Product.discontinue_product(pNo)
+            flash(f'successfully discontinue product {product[1]}')
     
     elif 'edit' in request.values:
-        pid = request.values.get('edit')
-        return redirect(url_for('manager.edit', pid=pid))
+        pNo = request.values.get('edit')
+        return redirect(url_for('manager.edit', pNo=pNo))
     
-    book_data = book()
-    return render_template('productManager.html', book_data = book_data, user=current_user.name)
+    product_data = get_product_by_memberId(current_user.id)
+    return render_template('productManager.html', product_data = product_data, user=current_user.name)
 
-def book():
-    book_row = Product.get_all_product()
-    book_data = []
-    for i in book_row:
-        book = {
-            '商品編號': i[0],
-            '商品名稱': i[1],
-            '商品售價': i[2],
-            '商品類別': i[3]
+def get_product_by_memberId(mId):
+    products = Product.get_product_by_launcher(mId)
+    product_data = []
+    for i in products:
+        product = {
+            'pNo': i[0],
+            'pName': i[1],
+            'price': i[2],
         }
-        book_data.append(book)
-    return book_data
+        product_data.append(product)
+    return product_data
 
 @manager.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        data = ""
-        while(data != None):
-            number = str(random.randrange( 10000, 99999))
-            en = random.choice(string.ascii_letters)
-            pid = en + number
-            data = Product.get_product(pid)
-
         name = request.values.get('name')
         price = request.values.get('price')
-        category = request.values.get('category')
         description = request.values.get('description')
+        launchBy = current_user.id
 
         if (len(name) < 1 or len(price) < 1):
             return redirect(url_for('manager.productManager'))
         
         Product.add_product(
-            {'pid' : pid,
-             'name' : name,
-             'price' : price,
-             'category' : category,
-             'description':description
+            {
+                'pName' : name,
+                'price' : price,
+                'description': description,
+                'launchBy' : launchBy
             }
         )
 
@@ -93,43 +84,35 @@ def add():
 @manager.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    if request.method == 'GET':
-        if(current_user.role == 'user'):
-            flash('No permission')
-            return redirect(url_for('bookstore'))
-
     if request.method == 'POST':
         Product.update_product(
             {
-            'name' : request.values.get('name'),
-            'price' : request.values.get('price'),
-            'category' : request.values.get('category'), 
-            'description' : request.values.get('description'),
-            'pid' : request.values.get('pid')
+                'pNo': request.values.get('pNo'),
+                'pName': request.values.get('pName'),
+                'price': request.values.get('price'),
+                'description': request.values.get('description'),
             }
         )
         
         return redirect(url_for('manager.productManager'))
-
     else:
         product = show_info()
         return render_template('edit.html', data=product)
 
 
 def show_info():
-    pid = request.args['pid']
-    data = Product.get_product(pid)
-    pname = data[1]
+    pNo = request.args['pNo']
+    data = Product.get_product_by_pNo(pNo)
+    pName = data[1]
     price = data[2]
-    category = data[3]
-    description = data[4]
-
+    description = data[3]
+    isAvailable = data[4]
     product = {
-        '商品編號': pid,
-        '商品名稱': pname,
-        '單價': price,
-        '類別': category,
-        '商品敘述': description
+        'pNo': pNo,
+        'pName': pName,
+        'price': price,
+        'description': description,
+        'isAvailable': isAvailable
     }
     return product
 
@@ -140,27 +123,29 @@ def orderManager():
     if request.method == 'POST':
         pass
     else:
-        order_row = Order_List.get_order()
+        order_row = Orders.get_order_by_mId(current_user.id)
         order_data = []
+        order_detail = []
         for i in order_row:
             order = {
-                '訂單編號': i[0],
-                '訂購人': i[1],
-                '訂單總價': i[2],
-                '訂單時間': i[3]
+                'mId': i[1],
+                'cartTime': i[2],
+                'pNo': i[3],
+                'amount': i[4]
             }
             order_data.append(order)
+            order_detail.append(order)
             
-        orderdetail_row = Order_List.get_orderdetail()
-        order_detail = []
+        # orderdetail_row = Order_List.get_orderdetail()
+        # order_detail = []
 
-        for j in orderdetail_row:
-            orderdetail = {
-                '訂單編號': j[0],
-                '商品名稱': j[1],
-                '商品單價': j[2],
-                '訂購數量': j[3]
-            }
-            order_detail.append(orderdetail)
+        # for j in orderdetail_row:
+        #     orderdetail = {
+        #         '訂單編號': j[0],
+        #         '商品名稱': j[1],
+        #         '商品單價': j[2],
+        #         '訂購數量': j[3]
+        #     }
+        #     order_detail.append(orderdetail)
 
     return render_template('orderManager.html', orderData = order_data, orderDetail = order_detail, user=current_user.name)
