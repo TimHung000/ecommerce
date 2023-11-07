@@ -1,13 +1,22 @@
+DROP TABLE BROWSE;
+DROP TABLE COMMENTS;
+DROP TABLE ORDERS;
+DROP TABLE RECORD;
+DROP TABLE MESSAGE;
+DROP TABLE CART;
+DROP TABLE TRANSACTION;
+DROP TABLE PRODUCT;
+DROP TABLE MEMBER;
+
 --------------------------------------------------------
 --  DDL for Table Member
 --------------------------------------------------------
 
 CREATE TABLE MEMBER (	
-   mId         NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-   username    VARCHAR2(38  BYTE),
-   mail        VARCHAR2(256 BYTE),
-   account     VARCHAR2(128 BYTE), 
-   passwd      VARCHAR2(128 BYTE), 
+   MID         NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+   ACCOUNT     VARCHAR2(128 BYTE) UNIQUE, 
+   PASSWD      VARCHAR2(128 BYTE), 
+   USERNAME    VARCHAR2(38  BYTE),
    PRIMARY KEY (mId)
 );
 
@@ -90,7 +99,7 @@ CREATE TABLE ORDERS (
    cartTime       date,
    pNo            NUMBER,
    amount         NUMBER(38,0),
-   PRIMARY KEY (mId, cartTime),
+   PRIMARY KEY (mId, cartTime, pNo),
    FOREIGN KEY (mId, cartTime) REFERENCES CART(mId, cartTime),
    FOREIGN KEY (pNo) REFERENCES PRODUCT(pNo)
 );
@@ -124,17 +133,28 @@ CREATE TABLE MESSAGE (
 );
 
 
--- DROP TABLE BROWSE;
--- DROP TABLE COMMENTS;
--- DROP TABLE ORDERS;
--- DROP TABLE RECORD;
--- DROP TABLE MESSAGE;
--- DROP TABLE CART;
--- DROP TABLE TRANSACTION;
--- DROP TABLE PRODUCT;
--- DROP TABLE MEMBER;
+INSERT INTO MEMBER (ACCOUNT, PASSWD, USERNAME) values ('test', 'test', 'test');
+INSERT INTO MEMBER (ACCOUNT, PASSWD, USERNAME) values ('test2', 'test2', 'test2');
 
-
--- INSERT INTO MEMBER (USERNAME, MAIL, ACCOUNT, PASSWD) values ('test', 'test@gmail.com', 'test', 'test')
-
--- INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY) values ('product1', 10, 'product desc', 1)
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product1', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product2', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product3', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product4', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product5', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product6', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product7', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product8', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product9', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product10', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product11', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product1', 10, 'product launch by test userId: 1', 1, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product2', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product3', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product4', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product5', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product6', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product7', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product8', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product9', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product10', 10, 'product launch by test userId: 2', 2, 1);
+INSERT INTO PRODUCT (PNAME, PRICE, PDESC, LAUNCHBY, ISAVAILABLE) values ('product11', 10, 'product launch by test userId: 2', 2, 1);

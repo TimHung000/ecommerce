@@ -99,7 +99,6 @@ def edit():
         product = show_info()
         return render_template('edit.html', data=product)
 
-
 def show_info():
     pNo = request.args['pNo']
     data = Product.get_product_by_pNo(pNo)
@@ -117,35 +116,30 @@ def show_info():
     return product
 
 
-@manager.route('/orderManager', methods=['GET', 'POST'])
+@manager.route('/transactionManager', methods=['GET', 'POST'])
 @login_required
-def orderManager():
-    if request.method == 'POST':
-        pass
-    else:
-        order_row = Orders.get_order_by_mId(current_user.id)
-        order_data = []
-        order_detail = []
-        for i in order_row:
-            order = {
-                'mId': i[1],
-                'cartTime': i[2],
-                'pNo': i[3],
-                'amount': i[4]
-            }
-            order_data.append(order)
-            order_detail.append(order)
-            
-        # orderdetail_row = Order_List.get_orderdetail()
-        # order_detail = []
+def transactionManager():
+    transactions = Transaction.get_transact_list_by_seller(current_user.id)
+    transaction_list = []
+    for transaction in transactions:
+        curr_transact = {
+            'tNo': transaction[0],
+            'buyerId': transaction[1],
+            'total_price': transaction[2],
+            'transTime': transaction[3]
+        }
+        transaction_list.append(curr_transact)
+        
+    transactDetails = Transaction.get_transact_detail_by_seller(current_user.id)
+    detail_list = []
 
-        # for j in orderdetail_row:
-        #     orderdetail = {
-        #         '訂單編號': j[0],
-        #         '商品名稱': j[1],
-        #         '商品單價': j[2],
-        #         '訂購數量': j[3]
-        #     }
-        #     order_detail.append(orderdetail)
+    for detail in transactDetails:
+        curr_detial = {
+            'tNo': detail[0],
+            'pName': detail[2],
+            'amount': detail[3],
+            'salePrice': detail[4]
+        }
+        detail_list.append(curr_detial)
 
-    return render_template('orderManager.html', orderData = order_data, orderDetail = order_detail, user=current_user.name)
+    return render_template('transactionManager.html', transaction_data = transaction_list, detail_data = detail_list, user=current_user.name)

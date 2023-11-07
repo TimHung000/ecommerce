@@ -19,9 +19,8 @@
     });
 </script>
 
-
-{% for i in orderData %}
-<div class="modal fade" id="staticBackdrop{{i.訂單編號}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+{% for transaction in transaction_data %}
+<div class="modal fade" id="staticBackdrop{{transaction.tNo}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -36,20 +35,15 @@
                             <th><center>商品單價</center></th>
                             <th><center>訂購數量</center></th>
                         </tr>
+                        {% for detail in detail_data %}
+                        {% if detail.tNo == transaction.tNo %}
                         <tr>
-                            <td> <center>商品名稱</center></td>
-                            <td> <center>商品單價</center></td>
-                            <td> <center>訂購數量</center></td>
-                        </tr>
-                        <!-- {% for j in orderDetail %}
-                        {% if j.訂單編號 == i.訂單編號 %}
-                        <tr>
-                            <td> <center>{{ j.商品名稱 }}</center></td>
-                            <td> <center>{{ j.商品單價 }}</center></td>
-                            <td> <center>{{ j.訂購數量 }}</center></td>
+                            <td> <center>{{ detail.pName }}</center></td>
+                            <td> <center>{{ detail.salePrice }}</center></td>
+                            <td> <center>{{ detail.amount }}</center></td>
                         </tr>
                         {% endif %}
-                        {% endfor %} -->
+                        {% endfor %}
                     </table>
                 </div>
             </div>
@@ -80,6 +74,7 @@
     <thead>
         <tr>
             <!-- <th width="10%">商品編號</th> -->
+            <th width="15%"><center>單號</center></th>
             <th width="15%"><center>訂購人</center></th>
             <th width="15%"><center>訂單總價</center></th>
             <th width="25%"><center>訂單時間</center></th>
@@ -87,13 +82,14 @@
         </tr>
     </thead>
     <tbody id="orderlist">
-    {% for i in orderData %}
+    {% for transaction in transaction_data %}
         <tr>
-            <td><center>{{ i.mId }}</center></td>
-            <td><center>{{ i.amount }}</center></td>
-            <td><center>{{ i.cartTime }}</center></td>
+            <td><center>{{ transaction.tNo }}</center></td>
+            <td><center>{{ transaction.buyerId }}</center></td>
+            <td><center>{{ transaction.total_price }}</center></td>
+            <td><center>{{ transaction.transTime }}</center></td>
             <td><center>
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{i.訂單編號}}">
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{transaction.tNo}}">
                     查看訂單細項
                 </button>
             </center></td>

@@ -30,11 +30,10 @@ def login():
 
         account = request.form['account']
         password = request.form['password']
-        member = Member.get_member_by_account(account) 
-
+        member = Member.get_member_by_account(account)
         try:
             user_id = member[0]
-            DB_password = member[3]
+            DB_password = member[2]
         except:
             flash('*沒有此帳號')
             return redirect(url_for('api.login'))
@@ -44,10 +43,7 @@ def login():
             user.id = user_id
             login_user(user)
 
-            # return redirect(url_for('bookstore.bookstore'))
-            # return redirect(url_for('manager.productManager'))
-            return redirect(url_for('manager.home'))
-        
+            return redirect(url_for('productStore.product'))
         else:
             flash('*密碼錯誤，請再試一次')
             return redirect(url_for('api.login'))
@@ -58,23 +54,16 @@ def login():
 @api.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        user_account = request.form['account']
         all_member = Member.get_all_member()
         account_list = []
         for i in all_member:
-            print(i)
             account_list.append(i[0])
 
-        if(user_account in account_list):
+        if(request.form['account'] in account_list):
             flash('Falied!')
             return redirect(url_for('api.register'))
         else:
-            input = { 
-                'username': request.form['username'], 
-                'account' : user_account, 
-                'password': request.form['password'], 
-            }
-            Member.create_member(input)
+            Member.create_member(request.form['username'], request.form['account'], request.form['password'])
             return redirect(url_for('api.login'))
 
     return render_template('register.html')
