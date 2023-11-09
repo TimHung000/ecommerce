@@ -11,7 +11,7 @@ from sqlalchemy import null
 from link import *
 import math
 from base64 import b64encode
-from api.sql import Member, Orders, Product, Record, Cart, Transaction
+from api.sql import Member, Orders, Product, Record, Cart, Transaction, Comments
 
 productStore = Blueprint('productStore', __name__, template_folder='../templates')
 
@@ -30,7 +30,7 @@ def product():
         end = page * 9
         keyword = request.values.get('keyword')
         
-        products = Product.get_product_by_keyword(keyword)
+        products = Product.get_product_by_keyword(keyword, current_user.id)
         product_list = []
         final_data = []
         
@@ -38,10 +38,13 @@ def product():
             curr_product = {
                 'pNo': product[0],
                 'pName': product[1],
-                'price': product[2]
+                'price': product[2],
+                'launcherId': product[4],
+                'username': product[5]
             }
             product_list.append(curr_product)
             total = total + 1
+
         
         if(len(product_list) < end):
             end = len(product_list)
@@ -58,28 +61,36 @@ def product():
     elif 'pNo' in request.args:
         pNo = request.args['pNo']
         product = Product.get_product_by_pNo(pNo)
-        
-        pName = product[1]
-        price = product[2]
-        description = product[3]
         image = 'sdg.jpg'
         
         product = {
-            'pNo': pNo,
-            'pName': pName,
-            'price': price,
-            'description': description,
+            'pNo': product[0],
+            'pName': product[1],
+            'price': product[2],
+            'description': product[3],
+            'launcherId': product[4],
+            'username': product[5],
             'image': image
         }
 
-        return render_template('product.html', product_data = product, user=current_user.name)
+        comment_list = []
+        comments = Comments.get_product_comments(pNo)
+        for comment in comments:
+            curr_comment = {
+                'username': comment[1],
+                'commentTime' : comment[2],
+                'comment' : comment[3]
+            }
+            comment_list.append(curr_comment)
+
+        return render_template('product.html', product_data = product, comment_list = comment_list, user=current_user.name)
     
     elif 'page' in request.args:
         page = int(request.args['page'])
         start = (page - 1) * 9
         end = page * 9
         
-        products = Product.get_all_product()
+        products = Product.get_all_product(current_user.id)
         product_list = []
         final_data = []
         
@@ -87,9 +98,12 @@ def product():
             product = {
                 'pNo': product[0],
                 'pName': product[1],
-                'price': product[2]
+                'price': product[2],
+                'launcherId': product[4],
+                'username': product[5]
             }
             product_list.append(product)
+            count += 1
             
         if(len(product_list) < end):
             end = len(product_list)
@@ -97,13 +111,14 @@ def product():
             
         for j in range(start, end):
             final_data.append(product_list[j])
-        
+        count = math.ceil(total/9)    
+
         return render_template('productStore.html', product_data=final_data, user=current_user.name, page=page, flag=flag, count=count)    
     
     elif 'keyword' in request.args:
         single = 1
         keyword = request.values.get('keyword')
-        Product.get_product_by_keyword(keyword)
+        Product.get_product_by_keyword(keyword, current_user.id)
         products = cursor.fetchall()
         product_list = []
         total = 0
@@ -112,7 +127,9 @@ def product():
             curr_product = {
                 'pNo': product[0],
                 'pName': product[1],
-                'price': product[2]
+                'price': product[2],
+                'launcherId': product[4],
+                'username': product[5]
             }
             product_list.append(curr_product)
             total = total + 1
@@ -125,16 +142,21 @@ def product():
         return render_template('productStore.html', keyword=keyword, single=single, product_data=product_list, user=current_user.name, page=1, flag=flag, count=count)    
     
     else:
-        products = Product.get_all_product()
+        products = Product.get_all_product(current_user.id)
         product_list = []
+        total = 0
         for product in products:
             curr_product = {
                 'pNo': product[0],
                 'pName': product[1],
                 'price': product[2],
+                'launcherId': product[4],
+                'username': product[5]
             }
+            total += 1
             if len(product_list) < 9:
                 product_list.append(curr_product)
+        count = math.ceil(total/9)
         
         return render_template('productStore.html', product_data=product_list, user=current_user.name, page=1, flag=flag, count=count)
 
@@ -272,3 +294,17 @@ def change_order():
         # change the amount ordered
         if request.form[str(product[0])] != str(product[2]):
             Orders.update_amount(cart[0], cart[1], product[0], request.form[str(product[0])])
+
+@productStore.route('/comment', methods=['POST'])
+@login_required
+def comment():
+    if request.method == 'POST':
+        comment = request.form.get("comment").strip()
+        pNo = request.form.get("pNo")
+        if comment != "":
+            time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            format = 'yyyy-mm-dd hh24:mi:ss'
+            Comments.add_product_comment(current_user.id, pNo, time, format, comment)
+
+    return redirect(url_for('productStore.product', pNo = pNo))
+

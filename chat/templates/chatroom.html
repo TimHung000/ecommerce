@@ -1,0 +1,120 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+
+{% endblock head %}
+
+{% block title %}BookStore{% endblock title%}
+
+{% block content%}
+
+
+<br/>
+
+<div class="container py-5 px-4" >
+  
+    <div class="row rounded-lg overflow-hidden shadow" style="height: 800px;">
+        <!-- Users box-->
+        <div class="col-5 px-0 overflow-auto h-100">
+            <div class="bg-white">
+  
+                <div class="bg-gray px-4 py-2 bg-light">
+                    <p class="h5 mb-0 py-1">Recent</p>
+                </div>
+  
+                <div class="messages-box">
+                    <div class="list-group rounded-0">
+                        {% for chatroom in chatroom_list %}
+                            {% if chatroom.chatroomId == current_chatroomId %}
+                                <a class="list-group-item list-group-item-action active text-white rounded-0">
+                                    <div class="media"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                                        <div class="media-body ml-4">
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <h6 class="mb-0"> {{ chatroom.receiverName }}</h6>
+                                                <!-- <small class="small font-weight-bold">25 Dec</small> -->
+                                            </div>
+                                            <!-- <p class="font-italic mb-0 text-small">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.</p> -->
+                                        </div>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('chat.chatroom', mId=chatroom.receiverId) }}" class="list-group-item list-group-item-action list-group-item-light rounded-0">
+                                    <div class="media"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                                        <div class="media-body ml-4">
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <h6 class="mb-0">{{ chatroom.receiverName }}</h6>
+                                                <!-- <small class="small font-weight-bold">14 Dec</small> -->
+                                            </div>
+                                            <!-- <p class="font-italic text-muted mb-0 text-small">Lorem ipsum dolor sit amet, consectetur. incididunt ut labore.</p> -->
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor%}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Box-->
+        <div class="col-7 px-0 h-100">
+            {% if current_chatroomId != None %}
+            <div class="px-4 py-5 chat-box bg-white overflow-auto" style="height: 90%;">
+                {% for message in message_list %}
+                    {% if message.senderId == sender.senderId %}
+                        <!-- Sender Message-->
+                        <div class="media w-50 mb-3">
+                            <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle mb-2">
+                            <div class="media-body ml-3">
+                                <div class="bg-light rounded py-2 px-3 mb-2">
+                                    <p class="text-small mb-0 text-muted" style="white-space: pre-wrap;">
+                                        {{ message.content }}
+                                    </p>
+                                </div>
+                                <p class="small text-muted">
+                                    {{ message.messageTime.strftime("%Y-%m-%d %H:%M:%S") }}
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Reciever Message-->
+                        <div class="media w-50 ml-auto mb-3">
+                            <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle mb-2">
+                            <div class="media-body">
+                                <div class="bg-primary rounded py-2 px-3 mb-2">
+                                    <p class="text-small mb-0 text-white " style="white-space: pre-wrap;">
+                                        {{ message.content }}
+                                    </p>
+                                </div>
+                                <p class="small text-muted">
+                                    {{ message.messageTime.strftime("%Y-%m-%d %H:%M:%S") }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+  
+            <!-- Typing area -->
+            <form method="post" action={{ url_for('chat.chatroom') }} class="bg-light" style="height: 10%;">
+                <div class="input-group">
+                    <input type="text" placeholder="Type a message" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light" name="message">
+                    <input class="d-none" name="mId" value="{{ receiver.receiverId }}">
+                    <input class="d-none" name="chatroomId" value="{{ current_chatroomId }}">
+                    <div class="input-group-append">
+                        <button id="button-addon2" type="submit" class="btn btn-link w-100 h-100"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" class="w-100 h-100"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg>                
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% endif%}
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock content%}

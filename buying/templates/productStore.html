@@ -43,9 +43,8 @@
         <div class="col-sm-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">{{product.pNo}}</h5>
-              <p class="card-text">${{product.price}}</p>
-              
+              <h5 class="card-title">{{product.pName}}</h5>
+              <div class="card-text" style="text-decoration: none;">${{product.price}}</div>
               <a href="{{ url_for('productStore.product', pNo=product.pNo) }}" class="btn btn-outline-primary">查看商品資訊</a>
               <button class="btn btn-outline-success" type="submit" value="{{product.pNo}}" name="pNo" >加入購物車</button>
             </div>

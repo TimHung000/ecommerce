@@ -17,9 +17,9 @@ class User(UserMixin):
 def user_loader(userid):  
     user = User()
     user.id = userid
-    data = Member.get_member_by_Id(userid)
+    member = Member.get_member_by_Id(userid)
     try:
-        user.name = data[0]
+        user.name = member[1]
     except:
         pass
     return user
@@ -57,7 +57,7 @@ def register():
         all_member = Member.get_all_member()
         account_list = []
         for i in all_member:
-            account_list.append(i[0])
+            account_list.append(i[1])
 
         if(request.form['account'] in account_list):
             flash('Falied!')
