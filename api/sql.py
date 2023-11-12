@@ -160,11 +160,11 @@ class Orders():
         DB.commit()
 
 class Transaction():
-    def add_transaction(mId, transTime, format):
-        sql = 'INSERT INTO TRANSACTION(BUYERID, TRANSTIME) VALUES(:mId, TO_DATE(:transTime, :format)) RETURNING TNO INTO :out_tNo'
+    def add_transaction(mId, transTime, format, paymentMethod, deliveryMethod, deliveryPrice):
+        sql = 'INSERT INTO TRANSACTION(BUYERID, TRANSTIME, PAYMENTMETHOD, DELIVERMETHOD, DELIVERPRICE) VALUES(:mId, TO_DATE(:transTime, :format), :paymentMethod, :deliveryMethod, :deliveryPrice) RETURNING TNO INTO :out_tNo'
         cursor = DB.prepare(sql)
         out_tNo = cursor.var(oracledb.DB_TYPE_NUMBER)
-        DB.execute_input(DB.prepare(sql), {'mId': mId, 'TRANSTIME': transTime, 'format': format, 'out_tNo': out_tNo})
+        DB.execute_input(DB.prepare(sql), {'mId': mId, 'TRANSTIME': transTime, 'format': format, 'out_tNo': out_tNo, 'paymentMethod': paymentMethod, 'deliveryMethod': deliveryMethod, 'deliveryPrice': deliveryPrice})
         DB.commit()
         return int(out_tNo.getvalue()[0])
     

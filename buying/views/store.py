@@ -208,8 +208,13 @@ def cart():
 
             time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             format = 'yyyy-mm-dd hh24:mi:ss'
-            
-            tNo = Transaction.add_transaction(cart[0], time, format)
+
+            deliveryFee = int(request.values.get('deliveryFee'))
+            deliveryType = request.values.get('deliveryType')
+            paymentMethod = request.values.get('paymentMethod')
+
+
+            tNo = Transaction.add_transaction(cart[0], time, format, paymentMethod, deliveryType, deliveryFee)
             for product in products:
                 Record.add_record(tNo, product[0], product[2], product[3])
             
