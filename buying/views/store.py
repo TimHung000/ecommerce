@@ -18,7 +18,7 @@ productStore = Blueprint('productStore', __name__, template_folder='../templates
 @productStore.route('/', methods=['GET', 'POST'])
 @login_required
 def product():
-    result = Product.count_all()
+    result = Product.count_all(current_user.id)
     count = math.ceil(result[0]/9)
     flag = 0
     
@@ -86,6 +86,7 @@ def product():
         return render_template('product.html', product_data = product, comment_list = comment_list, user=current_user.name)
     
     elif 'page' in request.args:
+        total = 0
         page = int(request.args['page'])
         start = (page - 1) * 9
         end = page * 9
@@ -103,7 +104,7 @@ def product():
                 'username': product[5]
             }
             product_list.append(product)
-            count += 1
+            total += 1
             
         if(len(product_list) < end):
             end = len(product_list)

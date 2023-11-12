@@ -84,9 +84,11 @@ class Product():
         DB.execute_input(DB.prepare(sql), input)
         DB.commit()
 
-    def count_all():
-        sql = 'SELECT COUNT(*) FROM PRODUCT WHERE ISAVAILABLE = 1'
-        return DB.fetchone(DB.execute(DB.connect(), sql))
+    def count_all(mId):
+        sql = 'SELECT COUNT(*) FROM PRODUCT WHERE LAUNCHBY != :mId AND ISAVAILABLE = 1'
+        return DB.fetchone(DB.execute_input(DB.prepare(sql), {'mId': mId}))
+
+        # return DB.fetchone(DB.execute(DB.connect(), sql))
     
     def count_by_launcher(mId):
         sql = 'SELECT COUNT(*) WHERE mId = :mId FROM PRODUCT WHERE ISAVAILABLE = 1'
