@@ -50,7 +50,20 @@
       </tr>
       {% endfor %}
     </table>
+
     <center>
+      <select class="form-select" aria-label="Default select example" name="paymentMethod">
+        <option value="0" selected>付款方式</option>
+        <option value="1">信用卡</option>
+        <option value="2">貨到付款</option>
+      </select>
+
+      <select class="form-select" aria-label="Default select example" name="deliveryType">
+        <option value="0" selected>運送方式</option>
+        <option value="1">宅配</option>
+        <option value="2">超商</option>
+      </select>      
+
       <div class="option">
         <button class="btn btn-primary" type="submit" value="edit" name="user_edit" >繼續購物</button>
         <button class="btn btn-success" type="submit" value="edit" name="buy" >直接結帳</button>

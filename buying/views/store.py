@@ -197,7 +197,10 @@ def cart():
         
         elif "buy" in request.form:
             change_order()
-            return redirect(url_for('productStore.transacting'))
+            if request.values.get('paymentMethod') == 0 or request.values.get('deliveryType') == 0:
+                return redirect(url_for('productStore.cart'))
+            
+            return redirect(url_for('productStore.transacting', paymentMethod=request.values.get('paymentMethod'), deliveryType = request.values.get('deliveryType')))
 
         elif "order" in request.form:
             cart = Cart.get_current_cart(current_user.id)
@@ -205,6 +208,7 @@ def cart():
 
             time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             format = 'yyyy-mm-dd hh24:mi:ss'
+            
             tNo = Transaction.add_transaction(cart[0], time, format)
             for product in products:
                 Record.add_record(tNo, product[0], product[2], product[3])
@@ -254,9 +258,16 @@ def transacting():
         }
         product_list.append(curr_product)
     
-    total_price = Cart.get_total_price(cart[0], cart[1])
 
-    return render_template('transacting.html', product_data=product_list, total_price=total_price, user=current_user.name)
+    deliveryType = request.values.get('deliveryType')
+    paymentMethod = request.values.get('paymentMethod')
+
+    paymentMethod = "信用卡" if paymentMethod == "1" else "貨到付款"
+    deliveryType = "宅配" if deliveryType == "1" else "超商取貨"
+    deliveryFee = 100 if deliveryType == '1' else 50
+    product_price = Cart.get_total_price(cart[0], cart[1])
+    total_price = product_price + deliveryFee
+    return render_template('transacting.html', product_data=product_list,product_price=product_price, total_price=total_price, user=current_user.name, deliveryFee=deliveryFee, deliveryType=deliveryType, paymentMethod=paymentMethod)
 
 @productStore.route('/transactionlist')
 @login_required
